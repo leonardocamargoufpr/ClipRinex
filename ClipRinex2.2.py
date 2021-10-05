@@ -16,12 +16,19 @@ def find_sdate(date_list):
         
     sec = re.findall('..', date_list[5])
     
+    sec = re.findall('.', sec[0])
+    
+    if sec[1] == '.':
+        sec = sec[0]
+    else:
+        sec = re.findall('..', date_list[5])
+    
     date_list[0] = year[1]
        
     date_list[-1] = sec[0]
     
     sdate = [int(x) for x in date_list]
-        
+                
     if int(date_list[1]) < 10:
         mode = re.findall('.', date_list[1])[0]
     elif int(date_list[3]) < 10:
@@ -48,6 +55,13 @@ def find_edate(date_list):
     year = re.findall('..', date_list[0])
         
     sec = re.findall('..', date_list[5])
+    
+    sec = re.findall('.', sec[0])
+    
+    if sec[1] == '.':
+        sec = sec[0]
+    else:
+        sec = re.findall('..', date_list[5])
     
     date_list[0] = year[1]
        
