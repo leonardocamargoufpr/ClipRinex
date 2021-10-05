@@ -170,8 +170,11 @@ def main():
     rdate = ' '.join(rdate)    
     
     cliped = clip_rinex(lines, adate, rdate)
-        
-    fileindex = path.index('.21O')
+
+    if '.21O' in path:
+        fileindex = path.index('.21O')
+    else:
+        fileindex = path.index('.21o')
         
     filename = path[:fileindex] + '_cliped' + path[fileindex:]
         
