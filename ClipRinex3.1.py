@@ -1,10 +1,14 @@
 import re
 from tkinter import Tk
+
+import tkinter as tk
+root= tk.Tk()
+
 from tkinter.filedialog import askopenfilename
 
-    
 
-## from an list argument of strings readed in main, 
+
+## from an list argument of strings readed in main,
 ## return a specific sequence that represents the starting date
 def find_sdate(date_list):
 
@@ -44,7 +48,7 @@ def find_sdate(date_list):
 
 
 
-## from an list argument of strings readed in main, 
+## from an list argument of strings readed in main,
 ## return a specific sequence that represents the ending date
 def find_edate(date_list):
 
@@ -75,11 +79,11 @@ def find_edate(date_list):
 
 
 
-def advance_date(date_list, step):    
+def advance_date(date_list, step):
     if date_list[4] + step < 60:        
         date_list[4] = date_list[4] + step
 
-    else:        
+    else:
         date_list[4] = date_list[4] + step - 60
 
         if date_list[3] + 1 < 60:            
@@ -94,7 +98,7 @@ def advance_date(date_list, step):
 
 
 
-def retreat_date(date_list, step):    
+def retreat_date(date_list, step):
     if date_list[4] - step > 0:        
         date_list[4] = date_list[4] - step
 
@@ -137,67 +141,96 @@ def clip_rinex(rinex_list, adate, rdate):
 
 
 def main():
-    Tk().withdraw()
+
+    canvas1 = tk.Canvas(root, width = 400, height = 300)
+    canvas1.pack()
     
-    path = askopenfilename()
+    label1 = tk.Label(root, text='Clip your rinex')
+    label1.config(font=('helvetica', 14))
+    canvas1.create_window(200, 50, window=label1)
     
-    text = open(path, 'r')
-
-    lines = text.readlines()
-
-    beginning, ending = lines[:100], lines[-100:]
-
-    sdate_list = ' '.join(beginning).split()
-
-    find = find_sdate(sdate_list)
-
-    sdate = find[0]
+    label2 = tk.Label(root, text='Step forward:')
+    label2.config(font=('helvetica', 10))
+    canvas1.create_window(200, 100, window=label2)
     
-    mode = find[1]
-
-    adate = advance_date(sdate, 5)
-
-    adate = [str(x) for x in adate]
+    entry1 = tk.Entry (root) 
+    canvas1.create_window(200, 125, window=entry1)
     
-    for i in range(0, len(adate)):        
-        if int(adate[i]) < 10:            
-            adate[i] = mode + adate[i]
-
-    adate[5] = adate[5] + '.0000000'
-
-    adate = ' '.join(adate)
+    label3 = tk.Label(root, text='Step backward:')
+    label3.config(font=('helvetica', 10))
+    canvas1.create_window(200, 150, window=label3)
+    
+    entry2 = tk.Entry (root) 
+    canvas1.create_window(200, 175, window=entry2)
+    
+    def clip():
         
-    edate_list = ' '.join(beginning).split()
-    
-    edate = find_edate(edate_list)
-
-    rdate = retreat_date(edate, 5)
-
-    rdate = [str(x) for x in rdate]
-    
-    for i in range(0, len(rdate)):        
-        if int(rdate[i]) < 10:            
-            rdate[i] = mode + rdate[i]
-    
-    rdate[5] = rdate[5] + '.0000000'
-
-    rdate = ' '.join(rdate)    
-    
-    cliped = clip_rinex(lines, adate, rdate)
-
-    if '.21O' in path:
-        fileindex = path.index('.21O')
-    else:
-        fileindex = path.index('.21o')
+        Tk().withdraw()
         
-    filename = path[:fileindex] + '_cliped' + path[fileindex:]
+        path = askopenfilename()
         
-    rinex_cliped = open(filename, 'w')
+        text = open(path, 'r')
+
+        lines = text.readlines()
+
+        beginning, ending = lines[:100], lines[-100:]
+
+        sdate_list = ' '.join(beginning).split()
+
+        find = find_sdate(sdate_list)
+
+        sdate = find[0]
+        
+        mode = find[1]
+
+        adate = advance_date(sdate, int(entry1.get()))
+
+        adate = [str(x) for x in adate]
+        
+        for i in range(0, len(adate)):        
+            if int(adate[i]) < 10:            
+                adate[i] = mode + adate[i]
+
+        adate[5] = adate[5] + '.0000000'
+
+        adate = ' '.join(adate)
+            
+        edate_list = ' '.join(beginning).split()
+        
+        edate = find_edate(edate_list)
+
+        rdate = retreat_date(edate, int(entry2.get()))
+
+        rdate = [str(x) for x in rdate]
+        
+        for i in range(0, len(rdate)):        
+            if int(rdate[i]) < 10:            
+                rdate[i] = mode + rdate[i]
+        
+        rdate[5] = rdate[5] + '.0000000'
+
+        rdate = ' '.join(rdate)    
+        
+        cliped = clip_rinex(lines, adate, rdate)
+
+        if '.21O' in path:
+            fileindex = path.index('.21O')
+        else:
+            fileindex = path.index('.21o')
+            
+        filename = path[:fileindex] + '_cliped' + path[fileindex:]
+            
+        rinex_cliped = open(filename, 'w')
+        
+        for i in cliped:
+            rinex_cliped.write(i)
+            
+        rinex_cliped.close()
+        
+    button1 = tk.Button(text='Choose the rinex file:', command=clip)
+    canvas1.create_window(200, 225, window=button1)
     
-    for i in cliped:
-        rinex_cliped.write(i)
-        
-    rinex_cliped.close()
+    root.mainloop()
 
 
 
